@@ -1,9 +1,9 @@
 ---
-layout: post
+layout: default
 title: "Docker Cheatsheet"
-date: 2021-02-20 -0000
+date: 2021-02-20
 categories: docker devops
-permalink: /docker-cheatsheet.html
+# permalink: /docker-cheatsheet.html
 ---
 
 ## Some docker commands
