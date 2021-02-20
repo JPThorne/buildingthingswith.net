@@ -15,4 +15,21 @@
 - start a stopped container
 `docker start [container-name]`
 
+- remove all stopped containers
+```
+docker rm $(docker ps -a -q)
+```
+
 ### Images
+
+- view all images
+```
+docker images
+```
+
+- remove an image (after stopping any associated containers)
+```
+docker rmi [image-name]
+```
+
+[back](./)
