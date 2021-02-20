@@ -40,4 +40,4 @@ docker images
 docker rmi [image-name]
 ```
 
-[back](./)
+[Home]( {{ site.url }})

@@ -4,4 +4,4 @@ permalink: /about.html
 
 # Aboot
 
-[back](./)
+[Home]( {{ site.url }})
