@@ -3,6 +3,7 @@ layout: default
 title: "Docker Cheatsheet"
 date: 2021-02-20
 categories: docker devops
+tags: docker devops
 # permalink: /docker-cheatsheet.html
 ---
 

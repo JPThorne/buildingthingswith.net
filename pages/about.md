@@ -2,6 +2,6 @@
 permalink: /about.html
 ---
 
-# Aboot
+## Aboot
 
 [Home]( {{ site.url }})

@@ -3,6 +3,7 @@ layout: default
 title: "Docker Compose Cheatsheet"
 date: 2021-02-19
 categories: docker devops
+tags: docker devops
 # permalink: /docker-compose-cheatsheet.html
 ---
 
