@@ -1,1 +1,5 @@
+---
+permalink: /about.html
+---
+
 # Aboot

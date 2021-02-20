@@ -1,3 +1,7 @@
+---
+permalink: /docker-cheatsheet.html
+---
+
 ## Some docker commands
 ### Containers
 - see all currently running containers

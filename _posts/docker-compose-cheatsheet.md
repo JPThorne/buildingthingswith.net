@@ -1,3 +1,7 @@
+---
+permalink: /docker-compose-cheatsheet.html
+---
+
 ## Some docker-compose commands
 
 - stop a running set of services (containers) defined in a compose file
