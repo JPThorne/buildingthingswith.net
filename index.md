@@ -1,4 +1,4 @@
 ## Hello World
 
-- [Docker-compose Cheatsheet](/posts/docker-compose-cheatsheet.md)
-- [Docker Cheatsheet](/posts/docker-cheatsheet.md)
+- [Docker-compose Cheatsheet](/docker-compose-cheatsheet.md)
+- [Docker Cheatsheet](/docker-cheatsheet.md)
