@@ -8,7 +8,9 @@ tags: devops docker
 ---
 
 ## Some docker commands
+
 ### Containers
+
 - see all currently running containers
 ```docker ps```
 
