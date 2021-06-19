@@ -2,8 +2,8 @@
 layout: default
 title: "Notes on using esp32 with nanoframework"
 date: 2021-06-19
-categories: microcontrollers esp32 .net iot
-tags: microcontrollers esp32 .net iot
+categories: iot microcontrollers esp32
+tags: iot microcontrollers esp32
 ---
 
 ## [Draft] Getting started with nanoframework on esp32
