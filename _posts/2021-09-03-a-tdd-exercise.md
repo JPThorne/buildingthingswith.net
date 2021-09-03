@@ -24,7 +24,7 @@ In this way we only write code that is inherently tested, and testable, & so our
 
 ## Example exercise
 
-Scenario: we want to build a component that can tell us if there is a problem in an environment in which a temperature-sensor is placed. If the temperature in this environment is consistently too high or too low, human intervention may be required. 
+Scenario: we want to build a component that can tell us if there is a problem in an environment in which a temperature sensor is placed. If the temperature in this environment is consistently too high or too low, human intervention may be required. 
 
 ## Pros, Cons & Considerations of TDD
 
