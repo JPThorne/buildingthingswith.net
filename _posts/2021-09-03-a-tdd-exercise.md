@@ -26,7 +26,7 @@ In this way we only write code that is inherently tested, and testable, & so our
 
 Scenario: we want to build a component that can tell us if there is a problem in an environment in which a temperature sensor is placed. If the temperature in this environment is consistently too high or too low, human intervention may be required.
 
-To solve for this, we will build a small console app that can read in the following values: `deviceId`, `temperature`, `dateTime`. This app will check some business rules to say whether the inputs are problematic, and if so, compare the inputs with existing stored values. If sufficient data exists (based on another busines rule) the app will indicate that there is a problem. 
+To solve for this, we will build a small console app that can read in the following values: `deviceId`, `temperature`, `dateTime`. This app will check some business rules to say whether the inputs are problematic, and if so, compare the inputs with existing stored values. If sufficient data exists (based on another busines rule) the app will indicate that there is a problem.
 
 ### Prerequisites
 
@@ -34,9 +34,9 @@ You need to have installed some version of the [.NET SDK](https://dotnet.microso
 
 ### Creating initial solution
 
-As an example, the following commands can be used to create a simple solution (or just manually do it via Visual Studio (VS)). 
+As an example, the following commands can be used to create a simple solution (or just manually do it via Visual Studio (VS)).
 
-```
+```sh
 dotnet new sln -n temperature-alert-tdd
 dotnet new console -n TemperatureAlert.CLI -o ./src/TemperatureAlert.CLI
 dotnet new classlib -n TemperatureAlert.Domain -o ./src/TemperatureAlert.Domain
@@ -53,13 +53,15 @@ dotnet sln add ./tests/TemperatureAlert.Domain.Tests/TemperatureAlert.Domain.Tes
 
 Now we are able to run commands such as (or just run via VS)
 
-```
+```sh
 dotnet test
 ```
-```
+
+```sh
 dotnet run --project ./src/TemperatureAlert.CLI/TemperatureAlert.CLI.csproj
 ```
-```
+
+```sh
 cd \src\TemperatureAlert.CLI\bin\Debug\net5.0 && TemperatureAlert.CLI.exe
 ```
 
@@ -69,7 +71,7 @@ Now, we could leave this part till later and only add project references when th
 
 ## Pros, Cons & Considerations of TDD
 
-It must be remembered that a unit-test does not constitute an integration or end-to-end test, so of course we cannot assume our applcation is working as intended without testing these things as well. However, if our business logic or algorithm can be 100% encoded without external dependencies, then we can say this component of the application is working as intended. We should be mindful that, depending on the feature, it can be difficult to define a set of test-cases that completely cover everything we actually want out of that feature. 
+It must be remembered that a unit-test does not constitute an integration or end-to-end test, so of course we cannot assume our applcation is working as intended without testing these things as well. However, if our business logic or algorithm can be 100% encoded without external dependencies, then we can say this component of the application is working as intended. We should be mindful that, depending on the feature, it can be difficult to define a set of test-cases that completely cover everything we actually want out of that feature.
 
 TDD can aid us in not writing code that we don't need, e.g. adhering to the principle of [YAGNI](https://martinfowler.com/bliki/Yagni.html)
 
