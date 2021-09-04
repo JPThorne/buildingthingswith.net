@@ -62,12 +62,43 @@ dotnet run --project ./src/TemperatureAlert.CLI/TemperatureAlert.CLI.csproj
 ```
 
 ```sh
-cd \src\TemperatureAlert.CLI\bin\Debug\net5.0 && TemperatureAlert.CLI.exe
+cd .\src\TemperatureAlert.CLI\bin\Debug\net5.0 && TemperatureAlert.CLI.exe
 ```
 
-Now, we could leave this part till later and only add project references when the test requires it, but, I know I'm going to need them and want to make sure the expected solution structure is adhered to so I'll add them now. When done you should have something that looks a little like the below image.
+Outputting the default
+
+```sh
+Hello World!
+```
+
+Now, we could leave this part till later and only add project references when the test requires it, but, I know I'm going to need them and want to make sure the expected solution structure is adhered to so I'll add them now. When done you should have something that looks like the below image. I've also gone ahead and removed all the boilerplate `Class1.cs`, `UnitTest1.cs` classes.
 
 ![Initial Solution Structure](/images/tdd/initial-solution-structure.png)
+
+### Test-cases
+
+We need a few test-cases if we are going to write some tests. Here are a few to get started.
+
+```text
+NOTE: Of course there would normally be a large amount of test cases, user-stories, acceptance-criteria etc. for something like this and we would naturally fit a component like this into a larger system, however, here we are going to just focus on the core of the program here.
+```
+
+- For a deviceId, if the temperature reading lies outside a range of acceptable values then store this anomaly in a record.
+- For a deviceId, if (x) number of anomalous records exist, for a time range (y), create an alert.
+
+Some business rules:
+
+- We define "number of anomalous records (x) that should trigger an alert" as say, 5.
+- Time range (y) as 10 minutes.
+
+We can then write some more specific test-cases, such as:
+
+- If 4 or less anomalies exist for the past 10 minutes, no alert should be triggered.
+- If 5 or more anomalies exist for the past 10 minutes, an alert should be triggered.
+
+### Let's write some code
+
+asdasd
 
 ## Pros, Cons & Considerations of TDD
 
