@@ -106,6 +106,10 @@ It must be remembered that a unit-test does not constitute an integration or end
 
 TDD can aid us in not writing code that we don't need, e.g. adhering to the principle of [YAGNI](https://martinfowler.com/bliki/Yagni.html)
 
+## Conclusion
+
+TDD is a powerful technique for enabling development to align with testing. As with all things programming, one should always remember to take the context into account, however, it is a tool we can use frequently for many coding tasks. The completed sample we created here can be viewed on [Github](https://github.com/JPThorne/demos-temperature-alert-tdd/tree/feat/completed-tdd-exercise)
+
 ## References
 
 - [Wikipedia on TDD](https://en.wikipedia.org/wiki/Test-driven_development)
