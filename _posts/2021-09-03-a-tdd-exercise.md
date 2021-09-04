@@ -98,7 +98,55 @@ We can then write some more specific test-cases, such as:
 
 ### Let's write some code
 
-asdasd
+Ok, time to write our 1st test! Now, where to put it, and what shall we test? Given that I know I want to use a convention of putting classes that solve business logic problems into our `Domain`, and that these classes will be called `XService`, where X relates to the object or domain, we can create our 1st test class called `TemperatureServiceTests`.
+
+A common starting point is to test that we "Can Construct" the object we intend to test, so lets start there. Our 1st test then is `Test_CanConstruct`. The test will be as follows:
+
+```c#
+using Xunit;
+
+namespace TemperatureAlert.Domain.Tests
+{
+    public class TemperatureServiceTests
+    {
+        public TemperatureServiceTests() { }
+
+        [Fact]
+        public void Test_CanConstruct()
+        {
+            //arrange
+
+            //act
+            var service = new TemperatureService();
+
+            //assert
+            Assert.NotNull(service);
+        }
+    }
+}
+```
+
+Our tests folder now looks like this:
+
+![TemperatureServiceTests.cs](/images/tdd/temperature-service-tests.png)
+
+A few things to note here: we are using a pattern called "arrange/act/assert" to give structure to our tests. Not all test will have an arrange step necessarily and so we may clean that comment up later on. I've created a ctor `TemperatureServiceTests` because it's a habit and I know I'll need it later on.
+
+Of course our code now doesn't compile, because we haven't created the `TemperatureService` class, so let's do that next. As mentioned earlier, we want to put our `Service` classes in our `Domain` & so this class goes in the project `TemperatureAlert.Domain`. Here it is, and now our code compiles and our test passes.
+
+```c#
+namespace TemperatureAlert.Domain
+{
+    public class TemperatureService
+    {
+        public TemperatureService()
+        {
+        }
+    }
+}
+```
+
+This is the pattern we are going to follow throughout our development here. 1. Test case, 2. Write test, 3. Write the code to pass the test.
 
 ## Pros, Cons & Considerations of TDD
 
