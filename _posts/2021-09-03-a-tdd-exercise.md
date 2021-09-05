@@ -255,7 +255,52 @@ public Task<AnalysisResult> AnalyzeTemperature(string deviceId, decimal abnormal
 }
 ```
 
-Naturally, our test output is now 1 pass and 1 fail, with the fail reading something along the lines of `System.NotImplementedException : The method or operation is not implemented.`
+Naturally, our test output is now 1 pass and 1 fail, with the fail reading something along the lines of `System.NotImplementedException : The method or operation is not implemented.`. So let's fix that.
+
+If we now want to make the test pass, this code will achieve that.
+
+```c#
+using System.Threading.Tasks;
+
+namespace TemperatureAlert.Domain
+{
+    public class TemperatureService
+    {
+        private ITemperatureRepository Repository { get; init;}
+
+        public TemperatureService(ITemperatureRepository repository)
+        {
+            Repository = repository;
+        }
+
+        public async Task<AnalysisResult> AnalyzeTemperature(string deviceId, decimal temperature)
+        {
+            var temperatureRule = await Repository.GetNormalTemperatureRange(deviceId);
+
+            await Repository.RecordTemperatureAnomaly(deviceId, temperature);
+
+            return new AnalysisResult
+            {
+                Status = "Abnormal",
+                Message = "45,534234 was higher than allowed maximum: 35"
+            };
+        }
+    }
+}
+```
+
+Running `dotnet test` outputs
+
+```sh
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 3 ms - TemperatureAlert.Domain.Tests.dll (net5.0)
+```
+
+The tests now pass! I see nothing wrong here :-)
+
+Of course, I am joking, clearly we have just fudged the data into the implementation to "make it pass" and this will not work in a real world scenario. But it does serve to highlight a useful point - the quality of our assertions in our tests matter a lot. Also, more tests are needed and we are not done yet.
 
 ## Pros, Cons & Considerations of TDD
 
