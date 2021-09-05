@@ -84,6 +84,7 @@ NOTE: Of course there would normally be a large amount of test cases, user-stori
 ```
 
 - For a deviceId, if the temperature reading lies outside a range of acceptable values then store this anomaly in a record.
+- For a deviceId, if the temperature is not abnormal, no record should be created and no alert should be triggered.
 - For a deviceId, if (x) number of anomalous records exist, for a time range (y), create an alert.
 
 Some business rules:
@@ -147,6 +148,114 @@ namespace TemperatureAlert.Domain
 ```
 
 This is the pattern we are going to follow throughout our development here. 1. Test case, 2. Write test, 3. Write the code to pass the test.
+
+Okay, next up, our 1st "real" test. Given our initial test criteria, we can call this test something along the lines of `Test_AnomalyIsRecordedIfTemperatureIsAbnormal`. We want to assert that some record was created if the given value matches a certain criteria.
+
+Here's my 1st attempt at this test:
+
+```c#
+        [Fact]
+        public async Task Test_AnomalyIsRecordedIfTemperatureIsAbnormal()
+        {
+            //arrange
+            var deviceId = "1";
+            var abnormalTemperature = 45.534234m;
+
+            var normalMinTemperature = 10m;
+            var normalMaxTemperature = 35m;
+
+            var repository = Substitute.For<ITemperatureRepository>();
+
+            repository.GetNormalTemperatureRange(deviceId).Returns(new TemperatureRule
+            {
+                MinTemperature = normalMinTemperature,
+                MaxTemperature = normalMaxTemperature
+            });
+
+            var service = new TemperatureService(repository);
+
+            //act
+            var result = await service.AnalyzeTemperature(deviceId, abnormalTemperature);
+
+            //assert
+            Assert.NotNull(result);
+            Assert.Equal("Abnormal", result.Status);
+            Assert.Equal($"{abnormalTemperature} was higher than allowed maximum: {normalMaxTemperature}", result.Message);
+            await repository.Received(1).GetNormalTemperatureRange(deviceId);
+            await repository.Received(1).RecordTemperatureAnomaly(deviceId, abnormalTemperature);
+        }
+```
+
+My thinking is as follows
+
+- We need some datastore to load business rules (mins and maxes) & to store values. For now that can be the same store, i.e. some `IRepository`.
+- I want to work with decimals for temperatures.
+- We want to scope the analysis to the `deviceId`, as different id's may have different rules, as specified in the test-case.
+- It would be nice if the analysis could return some information to us about how it went, hence the `result`.
+
+Of course, now our code doesn't compile. The implementation from this point is almost "automatic" using VS - we can `alt-enter` on our missing codes and VS will be able to create a lot of it for us. Of course, it's not perfect & doesn't know exactly what we want, so we need to specify locations of files, some return types etc. The resulting output to get this to compile looks like the following:
+
+```c#
+namespace TemperatureAlert.Domain
+{
+    public class AnalysisResult
+    {
+        public string Status { get; set; }
+        public string Message { get; set; }
+    }
+}
+```
+
+```c#
+namespace TemperatureAlert.Domain
+{
+    public class TemperatureRule
+    {
+        public decimal MinTemperature { get; set; }
+        public decimal MaxTemperature { get; set; }
+    }
+}
+```
+
+```c#
+using System.Threading.Tasks;
+
+namespace TemperatureAlert.Domain
+{
+    public interface ITemperatureRepository
+    {
+        Task<TemperatureRule> GetNormalTemperatureRange(string deviceId);
+        Task RecordTemperatureAnomaly(string deviceId, decimal abnormalTemperature);
+    }
+}
+```
+
+We also added `NSubstitute` to our test project for easy mocking as well as defined a default `RootNamespace` for our `Abstractions` project.
+
+```xml
+<PackageReference Include="NSubstitute" Version="4.2.2" />
+```
+
+```xml
+<RootNamespace>TemperatureAlert.Domain</RootNamespace>
+```
+
+Finally, our `TemperatureService` itself needed updating. We now expect a ctor which takes an `ITemperatureRepository` and an initial implementation of `AnalyzeTemperature`: 
+
+```c#
+public TemperatureService(ITemperatureRepository repository)
+{
+}
+```
+
+```c#
+public Task<AnalysisResult> AnalyzeTemperature(string deviceId, decimal abnormalTemperature)
+{
+    throw new NotImplementedException();
+}
+```
+
+Naturally, our test output is now 1 pass and 1 fail, with the fail reading something along the lines of `System.NotImplementedException : The method or operation is not implemented.`
 
 ## Pros, Cons & Considerations of TDD
 
