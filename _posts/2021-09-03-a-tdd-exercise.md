@@ -302,6 +302,72 @@ The tests now pass! I see nothing wrong here :-)
 
 Of course, I am joking, clearly we have just fudged the data into the implementation to "make it pass" and this will not work in a real world scenario. But it does serve to highlight a useful point - the quality of our assertions in our tests matter a lot. Also, more tests are needed and we are not done yet.
 
+Next up we aim to test for `Test_IfTemperatureIsNormal_NoAnomalyIsRecorded`. The test for that can look something like this 
+
+```c#
+[Fact]
+public async Task Test_IfTemperatureIsNormal_NoAnomalyIsRecorded()
+{
+    //arrange
+    var deviceId = "1";
+    var normalTemperature = 25.123m;
+    var dateTime = DateTime.UtcNow;
+
+    var normalMinTemperature = 10m;
+    var normalMaxTemperature = 35m;
+
+    var repository = Substitute.For<ITemperatureRepository>();
+
+    repository.GetNormalTemperatureRange(deviceId).Returns(new TemperatureRule
+    {
+        MinTemperature = normalMinTemperature,
+        MaxTemperature = normalMaxTemperature
+    });
+
+    var service = new TemperatureService(repository);
+
+    //act
+    var result = await service.AnalyzeTemperature(deviceId, normalTemperature, dateTime);
+
+    //assert
+    Assert.NotNull(result);
+    Assert.Equal("Normal", result.Status);
+    Assert.Equal($"{normalTemperature} was OK.", result.Message);
+    await repository.Received(1).GetNormalTemperatureRange(deviceId);
+    await repository.Received(0).RecordTemperatureAnomaly(Arg.Any<string>(), Arg.Any<decimal>());
+}
+```
+
+And of course, this test does not pass. The reason is clear - our implementation is always just returning "Abnormal" results regardless of the input. Let's fix that.
+
+```c#
+public async Task<AnalysisResult> AnalyzeTemperature(string deviceId, decimal temperature, DateTime dateTime)
+{
+    var temperatureRule = await Repository.GetNormalTemperatureRange(deviceId);
+
+    if (temperature < temperatureRule.MinTemperature || temperature > temperatureRule.MaxTemperature)
+    {
+        await Repository.RecordTemperatureAnomaly(deviceId, temperature);
+
+        return new AnalysisResult
+        {
+            Status = "Abnormal",
+            Message = "45,534234 was higher than allowed maximum: 35"
+        };
+    }
+    else
+    {
+        return new AnalysisResult
+        {
+            Status = "Normal",
+            Message = $"25,123 was OK."
+        };
+    }
+}
+```
+
+We're still carrying around the hardcoded values, because we aren't done and we didn't have to remove them yet - the tests pass.
+
 ## Pros, Cons & Considerations of TDD
 
 It must be remembered that a unit-test does not constitute an integration or end-to-end test, so of course we cannot assume our applcation is working as intended without testing these things as well. However, if our business logic or algorithm can be 100% encoded without external dependencies, then we can say this component of the application is working as intended. We should be mindful that, depending on the feature, it can be difficult to define a set of test-cases that completely cover everything we actually want out of that feature.
