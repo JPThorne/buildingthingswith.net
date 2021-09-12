@@ -543,6 +543,20 @@ public async Task Test_IfTemperatureIsNormal_NoAnomalyIsRecorded(decimal normalT
 
 And the fix is to change the message to use the incoming value: `Message = $"{temperature} was OK."`
 
+Ok, one last thing! We are still hard-coding `35` here: `$"{temperature} was higher than allowed maximum: 35"`. Let's fix that, we an update any of the tests that assert that result to have a different max and then we will prove a failure. Let's update `Test_AnomalyIsRecordedIfTemperatureIsAbnormal` to have `var normalMaxTemperature = 40m;`.
+
+We can now fix our implementation by changing:
+
+```c#
+Message = $"{temperature} was higher than allowed maximum: 35"
+```
+
+to
+
+```c#
+Message = $"{temperature} was higher than allowed maximum: {temperatureRule.MaxTemperature}"
+```
+
 ### Possible next steps for the solution
 
 Now that we have somewhat of a decent implementation, covered by some unit-tests, we can do a few things.
