@@ -493,6 +493,56 @@ The only differences are the `[InlineData]`, method name of course, and the asse
 await AlertService.Received(0).SendTemperatureAlert(deviceId, abnormalTemperature, now);
 ```
 
+It looks like we've addressed all our test-cases, so are we done? Kind of, but, if we read our implementation we can see that one of our tests could use some more specific data. Our `TemperatureService` is still hard-coding the normal result:
+
+```c#
+return new AnalysisResult
+{
+    Status = "Normal",
+    Message = $"25,123 was OK."
+};
+```
+
+We can fix that by updating `Test_IfTemperatureIsNormal_NoAnomalyIsRecorded` to use `[InlineData]`. Now our test becomes:
+
+```c#
+[Theory]
+[InlineData(10.1)]
+[InlineData(25.123)]
+[InlineData(34.99999)]
+public async Task Test_IfTemperatureIsNormal_NoAnomalyIsRecorded(decimal normalTemperature)
+{
+    //arrange
+    var deviceId = "1";
+    var dateTime = DateTime.UtcNow;
+
+    var normalMinTemperature = 10m;
+    var normalMaxTemperature = 35m;
+
+    var repository = Substitute.For<ITemperatureRepository>();
+
+    repository.GetNormalTemperatureRange(deviceId).Returns(new TemperatureRule
+    {
+        MinTemperature = normalMinTemperature,
+        MaxTemperature = normalMaxTemperature
+    });
+
+    var service = new TemperatureService(repository, AlertService);
+
+    //act
+    var result = await service.AnalyzeTemperature(deviceId, normalTemperature, dateTime);
+
+    //assert
+    Assert.NotNull(result);
+    Assert.Equal("Normal", result.Status);
+    Assert.Equal($"{normalTemperature} was OK.", result.Message);
+    await repository.Received(1).GetNormalTemperatureRange(deviceId);
+    await repository.Received(0).RecordTemperatureAnomaly(Arg.Any<string>(), Arg.Any<decimal>());
+}
+```
+
+And the fix is to change the message to use the incoming value: `Message = $"{temperature} was OK."`
+
 ### Possible next steps for the solution
 
 Now that we have somewhat of a decent implementation, covered by some unit-tests, we can do a few things.
