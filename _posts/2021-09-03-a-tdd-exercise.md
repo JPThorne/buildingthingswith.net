@@ -441,12 +441,65 @@ $"{temperature} was higher than allowed maximum: 35"
 
 You can also see that we've added some additional props to `TemperatureRule` and a new method to the repo.
 
+Ok, so we've dealt with 5 or more, now lets deal with 4 or less, as per our current business rules. The implementation for that is surprisingly simple, in fact, we happen to have already coded for this in our previous implementation. We can add another test, `Test_XOrLessAnomaliesForTimeRangeY_ShouldNotTriggerAlert` and the only difference between it and the previous test is of course the test data, and the assertion for the `AlertService`. So we have: 
+
+```c#
+[Theory]
+[InlineData(4, 10)]
+[InlineData(3, 10)]
+public async Task Test_XOrLessAnomaliesForTimeRangeY_ShouldNotTriggerAlert(int numberOfAnomalies, int numberOfMinutes)
+{
+    //arrange
+    var deviceId = "1";
+    var abnormalTemperature = 42m;
+    var now = DateTime.UtcNow;
+
+    var normalMinTemperature = 10m;
+    var normalMaxTemperature = 35m;
+
+    var repository = Substitute.For<ITemperatureRepository>();
+
+    repository.GetNormalTemperatureRange(deviceId).Returns(new TemperatureRule
+    {
+        MinTemperature = normalMinTemperature,
+        MaxTemperature = normalMaxTemperature,
+        MaximumMinutes = 10,
+        MaximumNumberOfAnomalies = 5
+    });
+
+    var nowMinusXMinutes = now.AddMinutes(-numberOfMinutes);
+
+    repository.GetTemperatureAnomalyCount(deviceId, nowMinusXMinutes).Returns(numberOfAnomalies);
+
+    var service = new TemperatureService(repository, AlertService);
+
+    //act
+    var result = await service.AnalyzeTemperature(deviceId, abnormalTemperature, now);
+
+    //assert
+    Assert.NotNull(result);
+    Assert.Equal("Abnormal", result.Status);
+    Assert.Equal($"{abnormalTemperature} was higher than allowed maximum: {normalMaxTemperature}", result.Message);
+    await repository.Received(1).GetNormalTemperatureRange(deviceId);
+    await repository.Received(1).RecordTemperatureAnomaly(deviceId, abnormalTemperature);
+    await repository.Received(1).GetTemperatureAnomalyCount(deviceId, nowMinusXMinutes);
+    await AlertService.Received(0).SendTemperatureAlert(deviceId, abnormalTemperature, now);
+}
+```
+
+The only differences are the `[InlineData]`, method name of course, and the assertion that the alert service was *not* called.
+
+```c#
+await AlertService.Received(0).SendTemperatureAlert(deviceId, abnormalTemperature, now);
+```
+
 ### Possible next steps for the solution
 
 Now that we have somewhat of a decent implementation, covered by some unit-tests, we can do a few things.
 
 - Refactor to increase the separation of concerns. Arguably the `TemperatureService` is doing too many things, thereby violating `SRP`.
 - Refactor to reduce the number of `Repository` reads. Arguably the solution is inefficient in how it reads from the datastore.
+- The tests are using a pattern of `[Fact]`'s or `[Theory]` with `[InlineData]`, there are other ways to structure our test of course, we could use something like `AutoFixture`, we could also look at shifting our data out of the test using `InlineData` members etc.
 
 ## Pros, Cons & Considerations of TDD
 
