@@ -302,7 +302,7 @@ The tests now pass! I see nothing wrong here :-)
 
 Of course, I am joking, clearly we have just fudged the data into the implementation to "make it pass" and this will not work in a real world scenario. But it does serve to highlight a useful point - the quality of our assertions in our tests matter a lot. Also, more tests are needed and we are not done yet.
 
-Next up we aim to test for `Test_IfTemperatureIsNormal_NoAnomalyIsRecorded`. The test for that can look something like this 
+Next up we aim to test for `Test_IfTemperatureIsNormal_NoAnomalyIsRecorded`. The test for that can look something like this:
 
 ```c#
 [Fact]
@@ -367,6 +367,86 @@ public async Task<AnalysisResult> AnalyzeTemperature(string deviceId, decimal te
 ```
 
 We're still carrying around the hardcoded values, because we aren't done and we didn't have to remove them yet - the tests pass.
+
+Next up, we can address the scenario I am calling `Test_XOrMoreAnomaliesForTimeRangeY_ShouldTriggerAlert`. This is for test-case "For a deviceId, if (x) number of anomalous records exist, for a time range (y), create an alert". The test for this looks like the following: 
+
+```c#
+[Theory]
+[InlineData(5, 10)]
+[InlineData(6, 10)]
+public async Task Test_XOrMoreAnomaliesForTimeRangeY_ShouldTriggerAlert(int numberOfAnomalies, int numberOfMinutes)
+{
+    //arrange
+    var deviceId = "1";
+    var abnormalTemperature = 42m;
+    var now = DateTime.UtcNow;
+
+    var normalMinTemperature = 10m;
+    var normalMaxTemperature = 35m;
+
+    var repository = Substitute.For<ITemperatureRepository>();
+
+    repository.GetNormalTemperatureRange(deviceId).Returns(new TemperatureRule
+    {
+        MinTemperature = normalMinTemperature,
+        MaxTemperature = normalMaxTemperature,
+        MaximumMinutes = 10,
+        MaximumNumberOfAnomalies = 5
+    });
+
+    var nowMinusXMinutes = now.AddMinutes(-numberOfMinutes);
+
+    repository.GetTemperatureAnomalyCount(deviceId, nowMinusXMinutes).Returns(numberOfAnomalies);
+
+    var service = new TemperatureService(repository, AlertService);
+
+    //act
+    var result = await service.AnalyzeTemperature(deviceId, abnormalTemperature, now);
+
+    //assert
+    Assert.NotNull(result);
+    Assert.Equal("Abnormal", result.Status);
+    Assert.Equal($"{abnormalTemperature} was higher than allowed maximum: {normalMaxTemperature}", result.Message);
+    await repository.Received(1).GetNormalTemperatureRange(deviceId);
+    await repository.Received(1).RecordTemperatureAnomaly(deviceId, abnormalTemperature);
+    await repository.Received(1).GetTemperatureAnomalyCount(deviceId, nowMinusXMinutes);
+    await AlertService.Received(1).SendTemperatureAlert(deviceId, abnormalTemperature, now);
+}
+```
+
+There are a few things to note. We've defined a new `IAlertService` which, as the name suggests, would be used to send alerts as needed. Naturally this service needs to be injected into the ctor here and to fix the other tests. This could be approached in another way - the result from the `TemperatureService` could be used to trigger and alert or not and this could be actioned in some higher-up object, but for this exercise I'm just leaving it here.
+
+Of course, the test fails currently. We now need to address some hard-coding and lacking logic. To do that we can add the following:
+
+```c#
+var numberOfAnomalies = await Repository.GetTemperatureAnomalyCount(deviceId, dateTime.AddMinutes(-temperatureRule.MaximumMinutes));
+
+if (numberOfAnomalies >= temperatureRule.MaximumNumberOfAnomalies)
+{
+    await AlertService.SendTemperatureAlert(deviceId, temperature, dateTime);
+}
+```
+
+We also need to change some hard-coding to satisfy the test.
+
+```c#
+"45,534234 was higher than allowed maximum: 35"
+```
+
+to this
+
+```c#
+$"{temperature} was higher than allowed maximum: 35"
+```
+
+You can also see that we've added some additional props to `TemperatureRule` and a new method to the repo.
+
+### Possible next steps for the solution
+
+Now that we have somewhat of a decent implementation, covered by some unit-tests, we can do a few things.
+
+- Refactor to increase the separation of concerns. Arguably the `TemperatureService` is doing too many things, thereby violating `SRP`.
+- Refactor to reduce the number of `Repository` reads. Arguably the solution is inefficient in how it reads from the datastore.
 
 ## Pros, Cons & Considerations of TDD
 
