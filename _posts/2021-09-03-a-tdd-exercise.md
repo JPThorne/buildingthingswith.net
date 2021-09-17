@@ -15,7 +15,7 @@ Test Driven Development (TDD) is a way of coding whereby we write our tests befo
 
 In more detail, the process of using TDD is to:
 
-- understand the requirement we need to fulfill, it's test-cases etc.
+- understand the requirement we need to fulfill, its test-cases etc.
 - write a failing test (because the code for it to pass does not yet exist or is wrong).
 - write the code that makes the test pass (this code does not necessarily have to be super-neat and performant).
 - if needed, once the tests all pass, refactor to improve the code-quality.
@@ -79,18 +79,20 @@ Now, we could leave this part till later and only add project references when th
 
 We need a few test-cases if we are going to write some tests. Here are a few to get started.
 
-```text
-NOTE: Of course there would normally be a large amount of test cases, user-stories, acceptance-criteria etc. for something like this and we would naturally fit a component like this into a larger system, however, here we are going to just focus on the core of the program here.
+```sh
+NOTE: Of course there would normally be a large amount of test-cases, user-stories, acceptance-criteria etc. for something like this,
+and we would naturally fit a component like this into a larger system, 
+however, here we are going to just focus on the core of the program.
 ```
 
 - For a deviceId, if the temperature reading lies outside a range of acceptable values then store this anomaly in a record.
 - For a deviceId, if the temperature is not abnormal, no record should be created and no alert should be triggered.
-- For a deviceId, if (x) number of anomalous records exist, for a time range (y), create an alert.
+- For a deviceId, if `x` number of anomalous records exist, for a time range `y`, create an alert.
 
 Some business rules:
 
-- We define "number of anomalous records (x) that should trigger an alert" as say, 5.
-- Time range (y) as 10 minutes.
+- We define "number of anomalous records `x` that should trigger an alert" as say, 5.
+- Time range `y` as 10 minutes.
 
 We can then write some more specific test-cases, such as:
 
@@ -131,7 +133,7 @@ Our tests folder now looks like this:
 
 ![TemperatureServiceTests.cs](/images/tdd/temperature-service-tests.png)
 
-A few things to note here: we are using a pattern called "arrange/act/assert" to give structure to our tests. Not all test will have an arrange step necessarily and so we may clean that comment up later on. I've created a ctor `TemperatureServiceTests` because it's a habit and I know I'll need it later on.
+A few things to note here: we are using a pattern called "arrange/act/assert" to give structure to our tests. Not all test will have an arrange step necessarily and so we may clean that comment up later on. I've created a constructor `TemperatureServiceTests` because it's a habit and I know I'll need it later on.
 
 Of course our code now doesn't compile, because we haven't created the `TemperatureService` class, so let's do that next. As mentioned earlier, we want to put our `Service` classes in our `Domain` & so this class goes in the project `TemperatureAlert.Domain`. Here it is, and now our code compiles and our test passes.
 
@@ -147,43 +149,47 @@ namespace TemperatureAlert.Domain
 }
 ```
 
-This is the pattern we are going to follow throughout our development here. 1. Test case, 2. Write test, 3. Write the code to pass the test.
+This is the pattern we are going to follow throughout our development here:
+
+1. Test-case
+2. Write unit-test
+3. Write the code to pass the test.
 
 Okay, next up, our 1st "real" test. Given our initial test criteria, we can call this test something along the lines of `Test_AnomalyIsRecordedIfTemperatureIsAbnormal`. We want to assert that some record was created if the given value matches a certain criteria.
 
 Here's my 1st attempt at this test:
 
 ```c#
-        [Fact]
-        public async Task Test_AnomalyIsRecordedIfTemperatureIsAbnormal()
-        {
-            //arrange
-            var deviceId = "1";
-            var abnormalTemperature = 45.534234m;
+[Fact]
+public async Task Test_AnomalyIsRecordedIfTemperatureIsAbnormal()
+{
+    //arrange
+    var deviceId = "1";
+    var abnormalTemperature = 45.534234m;
 
-            var normalMinTemperature = 10m;
-            var normalMaxTemperature = 35m;
+    var normalMinTemperature = 10m;
+    var normalMaxTemperature = 35m;
 
-            var repository = Substitute.For<ITemperatureRepository>();
+    var repository = Substitute.For<ITemperatureRepository>();
 
-            repository.GetNormalTemperatureRange(deviceId).Returns(new TemperatureRule
-            {
-                MinTemperature = normalMinTemperature,
-                MaxTemperature = normalMaxTemperature
-            });
+    repository.GetNormalTemperatureRange(deviceId).Returns(new TemperatureRule
+    {
+        MinTemperature = normalMinTemperature,
+        MaxTemperature = normalMaxTemperature
+    });
 
-            var service = new TemperatureService(repository);
+    var service = new TemperatureService(repository);
 
-            //act
-            var result = await service.AnalyzeTemperature(deviceId, abnormalTemperature);
+    //act
+    var result = await service.AnalyzeTemperature(deviceId, abnormalTemperature);
 
-            //assert
-            Assert.NotNull(result);
-            Assert.Equal("Abnormal", result.Status);
-            Assert.Equal($"{abnormalTemperature} was higher than allowed maximum: {normalMaxTemperature}", result.Message);
-            await repository.Received(1).GetNormalTemperatureRange(deviceId);
-            await repository.Received(1).RecordTemperatureAnomaly(deviceId, abnormalTemperature);
-        }
+    //assert
+    Assert.NotNull(result);
+    Assert.Equal("Abnormal", result.Status);
+    Assert.Equal($"{abnormalTemperature} was higher than allowed maximum: {normalMaxTemperature}", result.Message);
+    await repository.Received(1).GetNormalTemperatureRange(deviceId);
+    await repository.Received(1).RecordTemperatureAnomaly(deviceId, abnormalTemperature);
+}
 ```
 
 My thinking is as follows
@@ -240,7 +246,7 @@ We also added `NSubstitute` to our test project for easy mocking as well as defi
 <RootNamespace>TemperatureAlert.Domain</RootNamespace>
 ```
 
-Finally, our `TemperatureService` itself needed updating. We now expect a ctor which takes an `ITemperatureRepository` and an initial implementation of `AnalyzeTemperature`: 
+Finally, our `TemperatureService` itself needed updating. We now expect a constructor which takes an `ITemperatureRepository` and an initial implementation of `AnalyzeTemperature`:
 
 ```c#
 public TemperatureService(ITemperatureRepository repository)
@@ -368,7 +374,7 @@ public async Task<AnalysisResult> AnalyzeTemperature(string deviceId, decimal te
 
 We're still carrying around the hardcoded values, because we aren't done and we didn't have to remove them yet - the tests pass.
 
-Next up, we can address the scenario I am calling `Test_XOrMoreAnomaliesForTimeRangeY_ShouldTriggerAlert`. This is for test-case "For a deviceId, if (x) number of anomalous records exist, for a time range (y), create an alert". The test for this looks like the following: 
+Next up, we can address the scenario I am calling `Test_XOrMoreAnomaliesForTimeRangeY_ShouldTriggerAlert`. This is for test-case "For a deviceId, if `x` number of anomalous records exist, for a time range `y`, create an alert". The test for this looks like the following:
 
 ```c#
 [Theory]
@@ -414,7 +420,7 @@ public async Task Test_XOrMoreAnomaliesForTimeRangeY_ShouldTriggerAlert(int numb
 }
 ```
 
-There are a few things to note. We've defined a new `IAlertService` which, as the name suggests, would be used to send alerts as needed. Naturally this service needs to be injected into the ctor here and to fix the other tests. This could be approached in another way - the result from the `TemperatureService` could be used to trigger and alert or not and this could be actioned in some higher-up object, but for this exercise I'm just leaving it here.
+There are a few things to note. We've defined a new `IAlertService` which, as the name suggests, would be used to send alerts as needed. Naturally this service needs to be injected into the constructor here and to fix the other tests. This could be approached in another way - the result from the `TemperatureService` could be used to trigger and alert or not and this could be actioned in some higher-up object, but for this exercise I'm just leaving it here.
 
 Of course, the test fails currently. We now need to address some hard-coding and lacking logic. To do that we can add the following:
 
@@ -564,10 +570,11 @@ Now that we have somewhat of a decent implementation, covered by some unit-tests
 - Refactor to increase the separation of concerns. Arguably the `TemperatureService` is doing too many things, thereby violating `SRP`.
 - Refactor to reduce the number of `Repository` reads. Arguably the solution is inefficient in how it reads from the datastore.
 - The tests are using a pattern of `[Fact]`'s or `[Theory]` with `[InlineData]`, there are other ways to structure our test of course, we could use something like `AutoFixture`, we could also look at shifting our data out of the test using `InlineData` members etc.
+- I have also not actually implemented a set of tests to check that `deviceId` variations are considered. E.g., if records exist for a `deviceId` `A`, but none for `deviceId` `B` then readings for `B` should not be impacted by existing values for `A`. The implementation does use device ids, but it would be good to test that.
 
 ## Pros, Cons & Considerations of TDD
 
-It must be remembered that a unit-test does not constitute an integration or end-to-end test, so of course we cannot assume our applcation is working as intended without testing these things as well. However, if our business logic or algorithm can be 100% encoded without external dependencies, then we can say this component of the application is working as intended. We should be mindful that, depending on the feature, it can be difficult to define a set of test-cases that completely cover everything we actually want out of that feature.
+It must be remembered that a unit-test does not constitute an integration or end-to-end test, so of course we cannot assume our application is working as intended without testing these things as well. However, if our business logic or algorithm can be 100% encoded without external dependencies, then we can say this component of the application is working as intended. We should be mindful that, depending on the feature, it can be difficult to define a set of test-cases that completely cover everything we actually want out of that feature.
 
 TDD can aid us in not writing code that we don't need, e.g. adhering to the principle of [YAGNI](https://martinfowler.com/bliki/Yagni.html)
 
