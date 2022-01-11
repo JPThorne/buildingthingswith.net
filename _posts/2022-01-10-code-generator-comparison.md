@@ -64,7 +64,85 @@ Cons:
 
 #### Yeoman Usage
 
+1. install node with [chocolatey](https://chocolatey.org/install)
+2. install yo:
+
+```sh
+npm install -g yo
+yo --version
+```
+
+```sh
+# install a generator
+npm install -g <generator-name>
+
+# e.g. 
+npm install -g generator-webapp
+
+# scaffold new project using installed generator
+yo <generator-name>
+
+# e.g. 
+yo webapp
+
+# use sub-generators, e.g. add a controller
+yo <generator-name>:<sub-generator-name>
+
+# troubleshoot & debug
+yo doctor
+yo --generators
+yo --help
+yo --version
+```
+
+```sh
+# create folder to hold generator, name is NB: generator-name, e.g. generator-sample
+cd generator-name
+
+# create package.json in folder
+echo '' > package.json or npm init
+npm install --save yeoman-generator
+
+# create folders
+# ├───package.json
+# └───generators/
+#     ├───app/
+#     │   └───index.js
+#     └───router/
+#         └───index.js
+
+npm link
+
+yo <generator-name> # e.g. yo sample [doesn't need 'generator' prefixing it]
+```
+
+The available priorities are (in running order):
+
+initializing - Your initialization methods (checking current project state, getting configs, etc)
+prompting - Where you prompt users for options (where you’d call this.prompt())
+configuring - Saving configurations and configure the project (creating .editorconfig files and other metadata files)
+default - If the method name doesn’t match a priority, it will be pushed to this group.
+writing - Where you write the generator specific files (routes, controllers, etc)
+conflicts - Where conflicts are handled (used internally)
+install - Where installations are run (npm, bower)
+end - Called last, cleanup, say good bye, etc
+
 #### Yeoman Findings
+
+Pros:
+
+- well known tool, widely used in JS world
+- API looks quite flexible and capable of generating full-on real-world APIs end-to-end e.g.:
+- [JHipster-DotNetCore](https://github.com/jhipster/jhipster-dotnetcore/blob/main/generators/server/templates/dotnetcore/src/Project/Controllers/AccountController.cs.ejs)
+- [WebApi sample](https://github.com/sbarski/generator-webapi/blob/master/app/templates/src/web/controllers/_valuescontroller.cs)
+- The tool is capable of being run after initial generation.
+- Applicable to a wide number of languages as it isn't language specific, just a templating engine.
+
+Cons:
+
+- It's in JS, and I'm more focused on .NET so the learning curve is greater.
+- It is still "just" templating., i.e. very similar to T4 etc.
+- Unlike OpenAPI generator, it's "just" a generator, it's not specifically going to generate OpenAPI spec, that would need to be written / combined.
 
 ### T4 templates
 
@@ -85,10 +163,14 @@ Cons:
 
 #### Yeoman Docs
 
+- [yeoman](https://yeoman.io/authoring/)
+
 #### T4 Docs
 
 #### Roslyn Docs
 
 ### Other References
+
+- ...
 
 [Home]( {{ site.url }})
