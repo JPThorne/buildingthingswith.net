@@ -220,6 +220,65 @@ conflicts - Where conflicts are handled (used internally)
 install - Where installations are run (npm, bower)
 end - Called last, cleanup, say good bye, etc
 
+#### Yeoman Sample
+
+```c#
+namespace <%= namespace %>.Controllers
+{
+    [Route("api")]
+    [ApiController]
+    public class AccountController : ControllerBase
+    {
+
+        <%_ if (authenticationType === 'jwt') { _%>
+        private readonly ILogger<AccountController> _log;
+        <%_ if (cqrsEnabled) { _%>
+        private readonly IMediator _mediator;
+        <%_ } else { _%>
+        private readonly IMapper _userMapper;
+        private readonly IMailService _mailService;
+        private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
+        <%_ } _%>
+
+        <%_ if (cqrsEnabled) { _%>
+        public AccountController(ILogger<AccountController> log, IMediator mediator)
+        {
+            _log = log;
+            _mediator = mediator;
+        }
+        <%_ } else { _%>
+        public AccountController(ILogger<AccountController> log, UserManager<User> userManager, IUserService userService,
+            IMapper userMapper, IMailService mailService)
+        {
+            _log = log;
+            _userMapper = userMapper;
+            _userManager = userManager;
+            _userService = userService;
+            _mailService = mailService;
+        }
+        <%_ } _%>
+
+        [HttpPost("register")]
+        [ValidateModel]
+        public async Task<IActionResult> RegisterAccount([FromBody] ManagedUserDto managedUserDto)
+        {
+            if (!CheckPasswordLength(managedUserDto.Password)) throw new InvalidPasswordException();
+            <%_ if (cqrsEnabled) { _%>
+            var user = await _mediator.Send(new AccountCreateCommand { ManagedUserDto = managedUserDto });
+            <%_ } else { _%>
+            var user = await _userService.RegisterUser(_userMapper.Map<User>(managedUserDto), managedUserDto.Password);
+            await _mailService.SendActivationEmail(user);
+            <%_ } _%>
+            return CreatedAtAction(nameof(GetAccount), user);
+        }
+
+        /// etc...
+        }
+    }    
+}    
+```
+
 #### Yeoman Findings
 
 Pros:
