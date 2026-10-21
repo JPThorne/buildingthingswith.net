@@ -1,2 +1,4 @@
 theme: jekyll-theme-slate
 url: https://buildingthingswith.net
+plugins:
+  - jekyll-sitemap

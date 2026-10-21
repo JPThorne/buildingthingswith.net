@@ -4,6 +4,7 @@ title: "Comparison of code-generation tools"
 date: 2022-01-10
 categories: development microservices code-generation
 tags: development microservices code-generation
+description: "Pros, cons and usage notes comparing OpenAPI Generator, Yeoman, T4 templates and the Roslyn API for generating .NET code."
 ---
 
 ## Comparison of code-generation tools
@@ -298,11 +299,17 @@ Cons:
 
 ### T4 templates
 
+T4 (Text Template Transformation Toolkit) is a Microsoft templating engine that mixes literal text with C# control code to generate any text file at design time or build time.
+It is built into Visual Studio and .NET tooling, so it needs no extra runtime, but the template syntax and editor support are dated.
+
 #### T4 Usage
 
 #### T4 Findings
 
 ### Roslyn API
+
+Roslyn is the .NET compiler platform, exposing syntax trees and semantic models that let you parse, analyse and generate C# and VB code programmatically.
+Unlike text templating it produces code from a typed object model (or as source generators at compile time), at the cost of more code and a steeper learning curve.
 
 #### Roslyn Usage
 
@@ -319,10 +326,11 @@ Cons:
 
 #### T4 Docs
 
+- [code generation and T4 text templates](https://learn.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates)
+
 #### Roslyn Docs
 
-### Other References
-
-- ...
+- [.NET compiler platform SDK](https://learn.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/)
+- [dotnet/roslyn](https://github.com/dotnet/roslyn)
 
 [Home]( {{ site.url }})

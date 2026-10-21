@@ -4,6 +4,7 @@ title: "Docker Compose Cheatsheet"
 date: 2021-02-19
 categories: devops docker
 tags: devops docker
+description: "A quick reference of everyday docker-compose commands for starting, stopping and removing multi-container services."
 # permalink: /docker-compose-cheatsheet.html
 ---
 

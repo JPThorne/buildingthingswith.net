@@ -4,6 +4,7 @@ title: "Docker Cheatsheet"
 date: 2021-02-20
 categories: devops docker
 tags: devops docker
+description: "A quick reference of everyday docker commands for listing, running, stopping and cleaning up containers and images."
 # permalink: /docker-cheatsheet.html
 ---
 
