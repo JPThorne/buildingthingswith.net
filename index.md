@@ -12,3 +12,5 @@ description: "A personal blog of developer notes on .NET, code generation, TDD, 
     </li>
   {% endfor %}
 </ul>
+
+[About]({{ site.url }}/about.html)
