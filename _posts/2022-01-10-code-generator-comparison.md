@@ -302,16 +302,10 @@ Cons:
 T4 (Text Template Transformation Toolkit) is a Microsoft templating engine that mixes literal text with C# control code to generate any text file at design time or build time.
 It is built into Visual Studio and .NET tooling, so it needs no extra runtime, but the template syntax and editor support are dated.
 
-#### T4 Usage
-
-#### T4 Findings
-
 ### Roslyn API
 
 Roslyn is the .NET compiler platform, exposing syntax trees and semantic models that let you parse, analyse and generate C# and VB code programmatically.
 Unlike text templating it produces code from a typed object model (or as source generators at compile time), at the cost of more code and a steeper learning curve.
-
-#### Roslyn Usage
 
 #### Roslyn Findings
 
