@@ -307,8 +307,6 @@ It is built into Visual Studio and .NET tooling, so it needs no extra runtime, b
 Roslyn is the .NET compiler platform, exposing syntax trees and semantic models that let you parse, analyse and generate C# and VB code programmatically.
 Unlike text templating it produces code from a typed object model (or as source generators at compile time), at the cost of more code and a steeper learning curve.
 
-#### Roslyn Findings
-
 #### OpenAPI Docs
 
 - [templating](https://openapi-generator.tech/docs/templating)
