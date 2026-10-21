@@ -1,3 +1,7 @@
+---
+description: "A personal blog of developer notes on .NET, code generation, TDD, Docker, Kubernetes and ESP32 microcontrollers."
+---
+
 ## Hello World
 
 ### Posts
@@ -8,13 +12,3 @@
     </li>
   {% endfor %}
 </ul>
-
-### Tags for posts
-{% for tag in site.tags %}
-  <h3>{{ tag[0] }}</h3>
-  <ul>
-    {% for post in tag[1] %}
-      <li><a href="{{ post.url }}">{{ post.title }}</a></li>
-    {% endfor %}
-  </ul>
-{% endfor %}

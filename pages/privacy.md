@@ -1,5 +1,6 @@
 ---
 permalink: /privacy.html
+description: "Privacy policy for buildingthingswith.net: what visitor information is collected and how it is used."
 ---
 
 ## Privacy

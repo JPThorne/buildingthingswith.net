@@ -4,9 +4,10 @@ title: "Notes on using esp32 with nanoframework"
 date: 2021-06-19
 categories: iot microcontrollers esp32
 tags: iot microcontrollers esp32
+description: "Setup and troubleshooting notes for running .NET nanoFramework on an ESP32-DevKitC: flashing the board, finding the COM port and NuGet package issues."
 ---
 
-## [Draft] Getting started with nanoframework on esp32
+## Getting started with nanoframework on esp32
 
 ### Setup local dev environment & troubleshooting
 

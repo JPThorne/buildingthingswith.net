@@ -1,5 +1,6 @@
 ---
 permalink: /cookies.html
+description: "Cookie information for buildingthingswith.net, with a pointer to the privacy policy."
 ---
 
 ## Cookies

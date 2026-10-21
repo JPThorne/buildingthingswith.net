@@ -4,6 +4,7 @@ title: "A TDD exercise"
 date: 2021-09-03
 categories: tdd
 tags: tdd
+description: "A worked test-driven development exercise in C#: write the failing test first, make it pass, then refactor."
 # permalink: /a-tdd-exercise.html
 ---
 

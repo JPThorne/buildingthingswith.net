@@ -4,6 +4,7 @@ title: "Kubernetes Cheatsheet"
 date: 2021-02-21
 categories: devops kubernetes
 tags: devops docker k8s
+description: "A quick reference of everyday kubectl commands for inspecting pods, services and deployments in a Kubernetes cluster."
 ---
 
 ## Terms
