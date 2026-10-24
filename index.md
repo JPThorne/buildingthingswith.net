@@ -1,4 +1,5 @@
 ---
+title: "Developer notes on .NET, IoT and code generation"
 description: "A personal blog of developer notes on .NET, code generation, TDD, Docker, Kubernetes and ESP32 microcontrollers."
 ---
 
